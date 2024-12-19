@@ -321,10 +321,18 @@ class VideoMaskFormer(nn.Module):
         tz=0;
 
         if self.training:
-            if H*W>=424200:
-                features = self.backbone(F.interpolate(images.tensor, size=(480, 864), mode='bilinear', align_corners=False))
-                H=480;W=864
-                tz = 1;
+            if H<W:
+                features = self.backbone(F.interpolate(images.tensor, size=(320, 576), mode='bilinear', align_corners=False))
+                H=320;W=576
+            else:
+                features = self.backbone(F.interpolate(images.tensor, size=(576, 320), mode='bilinear', align_corners=False))
+                H=576;W=320
+            tz = 1;
+        
+            #if H*W>=424200:
+            #features = self.backbone(F.interpolate(images.tensor, size=(480, 864), mode='bilinear', align_corners=False))
+            #H=480;W=864
+            #tz = 1;
         
         if tz==0:
             features = self.backbone(images.tensor)
