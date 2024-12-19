@@ -255,7 +255,7 @@ def setup(args):
     """
     cfg = get_cfg()
     
-    cfg.SOLVER.CHECKPOINT_PERIOD = 10
+    cfg.SOLVER.CHECKPOINT_PERIOD = 500
     # for poly lr schedule
     add_deeplab_config(cfg)
     add_maskformer2_config(cfg)
