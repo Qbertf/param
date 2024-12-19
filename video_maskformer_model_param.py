@@ -297,11 +297,14 @@ class VideoMaskFormer(nn.Module):
             
             B,C,H,W = rs_images.tensor.size()
             
-            if H*W>=424200:
-                downsampled_images = F.avg_pool2d(F.interpolate(rs_images.tensor.float(), size=(480, 864), mode='bilinear', align_corners=False), kernel_size=4, stride=4, padding=0) #for img in images]
-                
+            #if H*W>=424200:
+            if H<W:
+                downsampled_images = F.avg_pool2d(F.interpolate(rs_images.tensor.float(), size=(320, 576), mode='bilinear', align_corners=False), kernel_size=4, stride=4, padding=0) #for img in images]
             else:
-                downsampled_images = F.avg_pool2d(rs_images.tensor.float(), kernel_size=4, stride=4, padding=0) #for img in images]
+                downsampled_images = F.avg_pool2d(F.interpolate(rs_images.tensor.float(), size=(576, 320), mode='bilinear', align_corners=False), kernel_size=4, stride=4, padding=0) #for img in images]
+
+            #else:
+            #    downsampled_images = F.avg_pool2d(rs_images.tensor.float(), kernel_size=4, stride=4, padding=0) #for img in images]
             images_lab = [torch.as_tensor(color.rgb2lab(ds_image[[2, 1, 0]].byte().permute(1, 2, 0).cpu().numpy()), device=ds_image.device, dtype=torch.float32).permute(2, 0, 1) for ds_image in downsampled_images]
             images_lab_sim = [get_images_color_similarity(img_lab.unsqueeze(0), k_size, 2) for img_lab in images_lab] # ori is 0.3, 0.5, 0.7
             
@@ -322,11 +325,11 @@ class VideoMaskFormer(nn.Module):
 
         if self.training:
             if H<W:
-                features = self.backbone(F.interpolate(images.tensor, size=(240, 432), mode='bilinear', align_corners=False))
-                H=240;W=432
+                features = self.backbone(F.interpolate(images.tensor, size=(320, 576), mode='bilinear', align_corners=False))
+                H=320;W=576
             else:
-                features = self.backbone(F.interpolate(images.tensor, size=(432, 240), mode='bilinear', align_corners=False))
-                H=432;W=240
+                features = self.backbone(F.interpolate(images.tensor, size=(576, 320), mode='bilinear', align_corners=False))
+                H=576;W=320
             tz = 1;
         
             #if H*W>=424200:
