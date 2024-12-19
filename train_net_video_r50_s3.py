@@ -319,7 +319,7 @@ def main(args):
     
     #trainer.model.load_state_dict(torch.load('/home/user01/MaskFreeVIS/mfvis_models/model_final_r50_0425.pth')['model'])
     
-    trainer.model.load_state_dict(torch.load('/home/user01/MaskFreeVIS/mfvis_models/model_final_r50_0466.pth')['model'])
+    trainer.model.load_state_dict(torch.load('/kaggle/input/maskfreemodel/maskfreemodels/model_final_r50_0466.pth')['model'])
 
     #trainer.model.load_state_dict(torch.load('/home/user01/MaskFreeVIS/mfvis_models/model_final_r101_0491.pth')['model'])
 
