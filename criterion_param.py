@@ -399,13 +399,13 @@ class VideoSetCriterion(nn.Module):
         self.losspct = 0.0
         if src_masks.shape[0] > 0:
             
-            #try:
-            if self.beta>0:
-                self.losspct = 1+self.PCT(images,src_masks,outputs,targets)
-                #else:
-                #    print('OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO')
-            #except:
-            #    pass
+            try:
+                if self.beta>0:
+                    self.losspct = 1+self.PCT(images,src_masks,outputs,targets)
+                    #else:
+                    #    print('OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO')
+            except:
+                pass
             #print('FFFFFFFFFFFFFFFFFFFFFF <====> self.losspct',self.losspct,self.losspct/2)
             
         
@@ -482,7 +482,7 @@ class VideoSetCriterion(nn.Module):
             "loss_dice": src_masks.sum() * 0.,
             "loss_bound": loss_pairwise,
             #"loss_bound_neighbor": ((loss_pairwise_neighbor + loss_pairwise_neighbor1 + loss_pairwise_neighbor2) * 0.1 * self.losspct) + (loss_pairwise_neighbor + loss_pairwise_neighbor1 + loss_pairwise_neighbor2),
-            "loss_bound_neighbor": (maz *1.2* self.losspct) + maz
+            "loss_bound_neighbor": (maz *1.0* self.losspct) + maz
             #"loss_pct":self.losspct
         }
 
