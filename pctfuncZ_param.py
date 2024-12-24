@@ -210,7 +210,7 @@ class PCT(nn.Module):
             
         self.fixflag = 0
         if 'fix' in self.powertype:
-            self.power = torch.zeros((2, 10), device='cuda:0') + int(self.powertype.split('_')[-1])
+            self.power = torch.zeros((2, 10), device='cuda:0') + float(self.powertype.split('_')[-1])
             self.fixflag = 1
     
     def norm(self,image):
