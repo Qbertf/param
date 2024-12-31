@@ -103,29 +103,38 @@ import torch.nn.functional as F
 class PowNet(nn.Module):
     def __init__(self, inputdim):
         super(PowNet, self).__init__()
+        # First layer
+        self.fc1 = nn.Linear(inputdim, 64)  # Increased number of units
+        # Second layer with increased units and LeakyReLU activation
+        self.fc2 = nn.Linear(64, 32)
+        # Third layer
+        self.fc3 = nn.Linear(32, 16)
+        # Fourth layer
+        self.fc4 = nn.Linear(16, 10)
         
-        # Define a deeper network with more complexity
-        self.fc1 = nn.Linear(inputdim, 64)
-        self.bn1 = nn.BatchNorm1d(64)  # Batch normalization for the first layer
-        self.fc2 = nn.Linear(64, 128)
-        self.bn2 = nn.BatchNorm1d(128)  # Batch normalization for the second layer
-        self.fc3 = nn.Linear(128, 64)
-        self.bn3 = nn.BatchNorm1d(64)  # Batch normalization for the third layer
-        self.fc4 = nn.Linear(64, 10)
-        self.dropout = nn.Dropout(0.3)  # Dropout regularization to avoid overfitting
-        
+        # Dropout layer to prevent overfitting
+        self.dropout = nn.Dropout(p=0.3)
+
     def forward(self, x):
-        x = F.relu(self.bn1(self.fc1(x)))  # Apply batch normalization and activation
-        x = self.dropout(x)  # Dropout for regularization
-        x = F.relu(self.bn2(self.fc2(x)))  # Apply batch normalization and activation
-        x = self.dropout(x)  # Dropout for regularization
-        x = F.relu(self.bn3(self.fc3(x)))  # Apply batch normalization and activation
-        x = self.fc4(x)  # Final fully connected layer
+        # First hidden layer with LeakyReLU activation and dropout
+        x = F.leaky_relu(self.fc1(x), negative_slope=0.01)
+        x = self.dropout(x)
+        
+        # Second hidden layer with LeakyReLU activation and dropout
+        x = F.leaky_relu(self.fc2(x), negative_slope=0.01)
+        x = self.dropout(x)
+        
+        # Third hidden layer with LeakyReLU activation
+        x = F.leaky_relu(self.fc3(x), negative_slope=0.01)
+        
+        # Fourth hidden layer without activation
+        x = self.fc4(x)
         
         # Apply Sigmoid activation to get values between 0 and 1, then scale to [1, 3]
         x = torch.sigmoid(x) * 5 + 1  # Scales to range [1, 3]
         
         return x  # Output values are now between 1 and 3
+
 
     
 # Main model
