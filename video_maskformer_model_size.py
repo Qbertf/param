@@ -22,7 +22,7 @@ import cv2
 import numpy as np
 import pickle
 import torch.nn.functional as F
-#import qcc
+import qccfunc
 
 def unfold_wo_center(x, kernel_size, dilation):
     assert x.dim() == 4
@@ -180,15 +180,17 @@ class VideoMaskFormer(nn.Module):
 
         self.num_frames = num_frames
         
-        #self.QCC = qcc.QCC()
         
-        #with open('alpha_beta.txt','r') as f:
-            #ab = eval(str(f.read()).replace('\n',''))
-            #self.alpha = ab['alpha'];
-            #self.beta = ab['beta'];
         
-        #print('alpha,beta',self.alpha,self.beta)
+        with open('myconfig.txt','r') as f:
+            ab = eval(str(f.read()).replace('\n',''))
+            self.alpha = ab['alpha'];
+            self.beta = ab['beta'];
+            qccfuncname = ab['QCC']
         
+        print('alpha,beta,qccfuncname',self.alpha,self.beta,qccfuncname)
+        
+        self.QCC = qccfunc.QCC(qccfuncname)
         
     @classmethod
     def from_config(cls, cfg):
@@ -212,7 +214,7 @@ class VideoMaskFormer(nn.Module):
             num_points=cfg.MODEL.MASK_FORMER.TRAIN_NUM_POINTS,
         )
 
-        weight_dict = {"loss_ce": class_weight, "loss_mask": mask_weight, "loss_mask_proj": mask_weight, "loss_dice": dice_weight, "loss_bound": mask_weight, "loss_bound_neighbor": mask_weight, "loss_out_box": mask_weight}
+        weight_dict = {"loss_ce": class_weight, "loss_mask": mask_weight, "loss_mask_proj": mask_weight, "loss_dice": dice_weight, "loss_bound": mask_weight, "loss_bound_neighbor": mask_weight, "loss_out_box": mask_weight}#,"loss_pct": mask_weight}
 
         if deep_supervision:
             dec_layers = cfg.MODEL.MASK_FORMER.DEC_LAYERS
@@ -295,11 +297,14 @@ class VideoMaskFormer(nn.Module):
             
             B,C,H,W = rs_images.tensor.size()
             
-            if H*W>=424200:
-                downsampled_images = F.avg_pool2d(F.interpolate(rs_images.tensor.float(), size=(480, 864), mode='bilinear', align_corners=False), kernel_size=4, stride=4, padding=0) #for img in images]
-                
+            #if H*W>=424200:
+            if H<W:
+                downsampled_images = F.avg_pool2d(F.interpolate(rs_images.tensor.float(), size=(320, 576), mode='bilinear', align_corners=False), kernel_size=4, stride=4, padding=0) #for img in images]
             else:
-                downsampled_images = F.avg_pool2d(rs_images.tensor.float(), kernel_size=4, stride=4, padding=0) #for img in images]
+                downsampled_images = F.avg_pool2d(F.interpolate(rs_images.tensor.float(), size=(576, 320), mode='bilinear', align_corners=False), kernel_size=4, stride=4, padding=0) #for img in images]
+
+            #else:
+            #    downsampled_images = F.avg_pool2d(rs_images.tensor.float(), kernel_size=4, stride=4, padding=0) #for img in images]
             images_lab = [torch.as_tensor(color.rgb2lab(ds_image[[2, 1, 0]].byte().permute(1, 2, 0).cpu().numpy()), device=ds_image.device, dtype=torch.float32).permute(2, 0, 1) for ds_image in downsampled_images]
             images_lab_sim = [get_images_color_similarity(img_lab.unsqueeze(0), k_size, 2) for img_lab in images_lab] # ori is 0.3, 0.5, 0.7
             
@@ -315,14 +320,22 @@ class VideoMaskFormer(nn.Module):
 
 
         B,C,H,W = images.tensor.size()
-        print(B,C,H,W)
+        
         tz=0;
 
-        if self.training:
-            if H*W>=424200:
-                features = self.backbone(F.interpolate(images.tensor, size=(480, 864), mode='bilinear', align_corners=False))
-                H=480;W=864
-                tz = 1;
+        if self.training==False:
+            if H<W:
+                features = self.backbone(F.interpolate(images.tensor, size=(320, 576), mode='bilinear', align_corners=False))
+                H=320;W=576
+            else:
+                features = self.backbone(F.interpolate(images.tensor, size=(576, 320), mode='bilinear', align_corners=False))
+                H=576;W=320
+            tz = 1;
+        
+            #if H*W>=424200:
+            #features = self.backbone(F.interpolate(images.tensor, size=(480, 864), mode='bilinear', align_corners=False))
+            #H=480;W=864
+            #tz = 1;
         
         if tz==0:
             features = self.backbone(images.tensor)
@@ -340,31 +353,39 @@ class VideoMaskFormer(nn.Module):
                         if key == 'masks':
                             gkey[key] = F.interpolate(gkey[key], size=(H, W), mode='nearest')
           
-           
+            
             if not is_coco:
                 # bipartite matching-based loss
-                losses = self.criterion(outputs, targets, images_lab_sim, images_lab_sim_nei, images_lab_sim_nei1, images_lab_sim_nei2)
+                losses = self.criterion(outputs, targets, images_lab_sim, images_lab_sim_nei, images_lab_sim_nei1, images_lab_sim_nei2,images.tensor)
                 
                 
             else:
-                losses = self.criterion(outputs, targets, None, None, None, None)
+                losses = self.criterion(outputs, targets, None, None, None, None,None)
 
             ############################## QCC ##############################
-            KK=[];
-            for gkey in targets:
-                KK.append(gkey['labels'].size()[0])
+            qcc=1;
+            if not is_coco:
+                KK=[];
+                for gkey in targets:
+                    KK.append(gkey['labels'].size()[0])
+
+                if self.alpha>0:
+                    qcc =self.QCC(outputs['pred_masks'],KK)
+                #else:
+                    #print('OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO')
                 
-            #if self.alpha>=1:
-                #qccv =self.QCC(outputs['pred_masks'],KK)
-                #print('qccv',qccv)
-            
+
             for k in list(losses.keys()):
                 if k in self.criterion.weight_dict:
-                    #if self.alpha>=1:
-                    #    losses[k] *= self.criterion.weight_dict[k]# * (1.0*qccv)
-                    #else:
-                    losses[k] *= self.criterion.weight_dict[k]
+                    if self.alpha>0:
+                        #print('push',k)
+                        #print('qcc',qcc)
+                        losses[k] *= self.criterion.weight_dict[k] * (qcc)
+                    else:
+                        losses[k] *= self.criterion.weight_dict[k]
+                        #print('Nqcc',qcc)
                 else:
+                    #print('pop',k)
                     losses.pop(k)
             return losses
         
