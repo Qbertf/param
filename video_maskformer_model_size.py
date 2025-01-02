@@ -182,11 +182,11 @@ class VideoMaskFormer(nn.Module):
         
         
         
-        with open('myconfig.txt','r') as f:
-            ab = eval(str(f.read()).replace('\n',''))
-            self.alpha = ab['alpha'];
-            self.beta = ab['beta'];
-            qccfuncname = ab['QCC']
+        #with open('myconfig.txt','r') as f:
+        #    ab = eval(str(f.read()).replace('\n',''))
+        #    self.alpha = ab['alpha'];
+        #    self.beta = ab['beta'];
+        #    qccfuncname = ab['QCC']
         
         #print('alpha,beta,qccfuncname',self.alpha,self.beta,qccfuncname)
         
