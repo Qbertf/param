@@ -22,7 +22,7 @@ import cv2
 import numpy as np
 import pickle
 import torch.nn.functional as F
-import qccfunc
+#import qccfunc
 
 def unfold_wo_center(x, kernel_size, dilation):
     assert x.dim() == 4
@@ -188,9 +188,9 @@ class VideoMaskFormer(nn.Module):
             self.beta = ab['beta'];
             qccfuncname = ab['QCC']
         
-        print('alpha,beta,qccfuncname',self.alpha,self.beta,qccfuncname)
+        #print('alpha,beta,qccfuncname',self.alpha,self.beta,qccfuncname)
         
-        self.QCC = qccfunc.QCC(qccfuncname)
+        #self.QCC = qccfunc.QCC(qccfuncname)
         
     @classmethod
     def from_config(cls, cfg):
