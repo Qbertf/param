@@ -168,7 +168,7 @@ class SubNet(nn.Module):
         x4 = self.fc4(x3)
         
         # Apply Sigmoid activation to get values between 0 and 1, then scale to [1, 3]
-        x = torch.sigmoid(x4) * 3 + 1  # Scales to range [1, 3]
+        x = torch.sigmoid(x4) * 3 + 0  # Scales to range [1, 3]
         
         return x  # Output values are now between 1 and 4
 
