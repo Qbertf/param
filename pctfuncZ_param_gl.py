@@ -363,27 +363,27 @@ class PCT(nn.Module):
         #return {'src':src_pts,'des':dst_pts}
         return (src_pts,dst_pts),self.numpy_to_keypoints(keypoints1),transformed_keypoints,self.numpy_to_keypoints(keypoints2),H,self.array_to_keypoints(unmatched_keypoints1)
     
-        def scale(self,targets):
-            ratio_scale=[];stat=[]
-            for Batch in targets:
-              Masks = Batch['masks'].detach().cpu().numpy()
-              I,T,H,W = Masks.shape
-              cmax = []
-              for i in range(0,I):
-                cmax.append(len(np.where(Masks[i]>0)[0]))
-              
-              if len(cmax)!=0:
-                  if np.max(cmax)!=0:
-                      ratio_scale.append(np.sum(cmax/np.max(cmax)))
-                      stat.append(1)
-                  else:
-                    ratio_scale.append(1)
-                    stat.append(-1)
+    def scale(self,targets):
+        ratio_scale=[];stat=[]
+        for Batch in targets:
+          Masks = Batch['masks'].detach().cpu().numpy()
+          I,T,H,W = Masks.shape
+          cmax = []
+          for i in range(0,I):
+            cmax.append(len(np.where(Masks[i]>0)[0]))
+          
+          if len(cmax)!=0:
+              if np.max(cmax)!=0:
+                  ratio_scale.append(np.sum(cmax/np.max(cmax)))
+                  stat.append(1)
               else:
                 ratio_scale.append(1)
                 stat.append(-1)
-                
-            return torch.tensor(ratio_scale).float().cuda(),stat
+          else:
+            ratio_scale.append(1)
+            stat.append(-1)
+            
+        return torch.tensor(ratio_scale).float().cuda(),stat
     
     def warp(self,hi,wi,H):
         size = (wi,hi)
