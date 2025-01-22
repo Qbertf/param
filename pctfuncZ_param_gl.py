@@ -281,7 +281,12 @@ class PCT(nn.Module):
     def keypoint_func(self,img1,img2):
     
         torch.set_grad_enabled(False)
-      
+
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")  # 'mps', 'cpu'
+
+        extractor = SuperPoint(max_num_keypoints=2048).eval().to(device)  # load the extractor
+        matcher = LightGlue(features="superpoint").eval().to(device)
+
         #gpath1 = path1.replace('AnnTrue','JPEGImages').replace('.png','.jpg')
         #img1 = cv2.imread(gpath1)
     
