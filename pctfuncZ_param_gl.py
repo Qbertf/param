@@ -356,13 +356,13 @@ class PCT(nn.Module):
         keypoints1 = feats0["keypoints"].cpu().numpy()
         keypoints2 = feats1["keypoints"].cpu().numpy()
     
-        print("src_pts:", src_pts.shape)
-        print("dst_pts:", dst_pts.shape)
-        print("keypoints1:", len(keypoints1))
-        print("transformed_keypoints:", transformed_keypoints.shape)
-        print("keypoints2:", len(keypoints2))
-        print("H:", H.shape)
-        print("unmatched_keypoints1:", unmatched_keypoints1.shape)
+        #print("src_pts:", src_pts.shape)
+        #print("dst_pts:", dst_pts.shape)
+        #print("keypoints1:", len(keypoints1))
+        #print("transformed_keypoints:", transformed_keypoints.shape)
+        #print("keypoints2:", len(keypoints2))
+        #print("H:", H.shape)
+        #print("unmatched_keypoints1:", unmatched_keypoints1.shape)
     
         torch.set_grad_enabled(True)
         #return {'src':src_pts,'des':dst_pts}
