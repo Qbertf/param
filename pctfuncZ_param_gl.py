@@ -294,14 +294,14 @@ class PCT(nn.Module):
         img1 = img1 / 255.0
         # Convert to PyTorch tensor and move to CUDA with float32 type
         img1 = torch.tensor(img1, dtype=torch.float32).permute(2, 0, 1)  # Channels first
-        img1 = img1.to('cuda:0')
+        image0 = img1.to('cuda:0')
     
     
         img2 = cv2.cvtColor(img2, cv2.COLOR_BGR2RGB)  # Convert BGR to RGB
         img2 = img2 / 255.0
         # Convert to PyTorch tensor and move to CUDA with float32 type
         img2 = torch.tensor(img2, dtype=torch.float32).permute(2, 0, 1)  # Channels first
-        img2 = img2.to('cuda:0')
+        image1 = img2.to('cuda:0')
     
         feats0 = extractor.extract(image0.to(device))
         feats1 = extractor.extract(image1.to(device))
