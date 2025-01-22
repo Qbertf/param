@@ -243,147 +243,147 @@ class PCT(nn.Module):
         return 
     '''
     
-def array_to_keypoints(self,keypoints_array):
-    """
-    Converts a (n, 1, 2) NumPy array of keypoints into a list of cv2.KeyPoint objects.
+    def array_to_keypoints(self,keypoints_array):
+        """
+        Converts a (n, 1, 2) NumPy array of keypoints into a list of cv2.KeyPoint objects.
+        
+        Args:
+            keypoints_array (np.ndarray): A NumPy array of shape (n, 1, 2),
+                                          where each row represents a keypoint as [[x, y]].
+        
+        Returns:
+            list: A list of cv2.KeyPoint objects.
+        """
+        if not isinstance(keypoints_array, np.ndarray) or keypoints_array.shape[-2:] != (1, 2):
+            raise ValueError("Input must be a NumPy array with shape (n, 1, 2).")
+        
+        keypoints_array = keypoints_array.reshape(-1, 2)  # Reshape to (n, 2)
+        keypoints = [cv2.KeyPoint(x=pt[0], y=pt[1], size=1.0) for pt in keypoints_array]
+        return keypoints
     
-    Args:
-        keypoints_array (np.ndarray): A NumPy array of shape (n, 1, 2),
-                                      where each row represents a keypoint as [[x, y]].
+    def numpy_to_keypoints(self,keypoints_array):
+        """
+        Converts a 2D NumPy array of keypoints into a tuple of cv2.KeyPoint objects.
+        
+        Args:
+            keypoints_array (np.ndarray): A 2D array of keypoints with shape (n, 2),
+                                          where each row is (x, y).
+        
+        Returns:
+            tuple: A tuple of cv2.KeyPoint objects.
+        """
+        if not isinstance(keypoints_array, np.ndarray) or keypoints_array.ndim != 2 or keypoints_array.shape[1] != 2:
+            raise ValueError("Input must be a 2D NumPy array with shape (n, 2).")
+        
+        keypoints = tuple(cv2.KeyPoint(x=pt[0], y=pt[1], size=1.0) for pt in keypoints_array)
+        return keypoints
     
-    Returns:
-        list: A list of cv2.KeyPoint objects.
-    """
-    if not isinstance(keypoints_array, np.ndarray) or keypoints_array.shape[-2:] != (1, 2):
-        raise ValueError("Input must be a NumPy array with shape (n, 1, 2).")
+    def keypoint_func(self,img1,img2):
     
-    keypoints_array = keypoints_array.reshape(-1, 2)  # Reshape to (n, 2)
-    keypoints = [cv2.KeyPoint(x=pt[0], y=pt[1], size=1.0) for pt in keypoints_array]
-    return keypoints
-
-def numpy_to_keypoints(self,keypoints_array):
-    """
-    Converts a 2D NumPy array of keypoints into a tuple of cv2.KeyPoint objects.
+        torch.set_grad_enabled(False)
+      
+        #gpath1 = path1.replace('AnnTrue','JPEGImages').replace('.png','.jpg')
+        #img1 = cv2.imread(gpath1)
     
-    Args:
-        keypoints_array (np.ndarray): A 2D array of keypoints with shape (n, 2),
-                                      where each row is (x, y).
+        img1 = cv2.cvtColor(img1, cv2.COLOR_BGR2RGB)  # Convert BGR to RGB
+        img1 = img1 / 255.0
+        # Convert to PyTorch tensor and move to CUDA with float32 type
+        img1 = torch.tensor(img1, dtype=torch.float32).permute(2, 0, 1)  # Channels first
+        img1 = img1.to('cuda:0')
     
-    Returns:
-        tuple: A tuple of cv2.KeyPoint objects.
-    """
-    if not isinstance(keypoints_array, np.ndarray) or keypoints_array.ndim != 2 or keypoints_array.shape[1] != 2:
-        raise ValueError("Input must be a 2D NumPy array with shape (n, 2).")
     
-    keypoints = tuple(cv2.KeyPoint(x=pt[0], y=pt[1], size=1.0) for pt in keypoints_array)
-    return keypoints
-
-def keypoint_func(self,img1,img2):
-
-    torch.set_grad_enabled(False)
-  
-    #gpath1 = path1.replace('AnnTrue','JPEGImages').replace('.png','.jpg')
-    #img1 = cv2.imread(gpath1)
-
-    img1 = cv2.cvtColor(img1, cv2.COLOR_BGR2RGB)  # Convert BGR to RGB
-    img1 = img1 / 255.0
-    # Convert to PyTorch tensor and move to CUDA with float32 type
-    img1 = torch.tensor(img1, dtype=torch.float32).permute(2, 0, 1)  # Channels first
-    img1 = img1.to('cuda:0')
-
-
-    img2 = cv2.cvtColor(img2, cv2.COLOR_BGR2RGB)  # Convert BGR to RGB
-    img2 = img2 / 255.0
-    # Convert to PyTorch tensor and move to CUDA with float32 type
-    img2 = torch.tensor(img2, dtype=torch.float32).permute(2, 0, 1)  # Channels first
-    img2 = img2.to('cuda:0')
-
-    feats0 = extractor.extract(image0.to(device))
-    feats1 = extractor.extract(image1.to(device))
-    matches01 = matcher({"image0": feats0, "image1": feats1})
-    feats0, feats1, matches01 = [
-        rbd(x) for x in [feats0, feats1, matches01]
-    ]  # remove batch dimension
-
-    kpts0, kpts1, matches = feats0["keypoints"], feats1["keypoints"], matches01["matches"]
-    m_kpts0, m_kpts1 = kpts0[matches[..., 0]], kpts1[matches[..., 1]]
-
-    #axes = viz2d.plot_images([image0, image1])
-    #viz2d.plot_matches(m_kpts0, m_kpts1, color="lime", lw=0.2)
-    #viz2d.add_text(0, f'Stop after {matches01["stop"]} layers', fs=20)
-
-    kpc0, kpc1 = viz2d.cm_prune(matches01["prune0"]), viz2d.cm_prune(matches01["prune1"])
-    #viz2d.plot_images([image0, image1])
-    #viz2d.plot_keypoints([kpts0, kpts1], colors=[kpc0, kpc1], ps=10)
-
-    # Assume you have `m_kpts0`, `m_kpts1`, and `matches` from your new code
-    # `matches` is already providing correspondences, so extract src_pts and dst_pts
-
-    # Convert matched keypoints to numpy arrays for OpenCV compatibility
-    src_pts = m_kpts0.cpu().numpy().astype(np.float32).reshape(-1, 1, 2)  # Keypoints from image0
-    dst_pts = m_kpts1.cpu().numpy().astype(np.float32).reshape(-1, 1, 2)  # Keypoints from image1
-
-    # Calculate the homography matrix H using RANSAC
-    if len(src_pts) >= 4:  # Minimum 4 points required for homography
-        H, mask = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC, 5.0)
-    else:
-        H = None
-        mask = None
-
-    # Identify unmatched keypoints in image0
-    # Extract all keypoints from feats0
-    all_kpts0 = feats0["keypoints"].cpu().numpy().astype(np.float32)  # Keypoints from image0
-    matched_indices0 = matches[..., 0].cpu().numpy()  # Indices of matched keypoints in image0
-    unmatched_indices0 = set(range(len(all_kpts0))) - set(matched_indices0)
-    unmatched_keypoints1 = all_kpts0[list(unmatched_indices0)]  # Unmatched keypoints from image0
-
-    # Transform unmatched keypoints using the homography matrix
-    transformed_keypoints = []
-    if H is not None and len(unmatched_keypoints1) > 0:
-        try:
-            unmatched_keypoints1 = unmatched_keypoints1.reshape(-1, 1, 2)
-            transformed_keypoints = cv2.perspectiveTransform(unmatched_keypoints1, H)
-            transformed_keypoints = transformed_keypoints.reshape(-1, 2)  # Flatten back to (n, 2)
-        except:
-            transformed_keypoints = []
-
-    # Convert keypoints from PyTorch to NumPy for compatibility with other tasks
-    keypoints1 = feats0["keypoints"].cpu().numpy()
-    keypoints2 = feats1["keypoints"].cpu().numpy()
-
-    print("src_pts:", src_pts.shape)
-    print("dst_pts:", dst_pts.shape)
-    print("keypoints1:", len(keypoints1))
-    print("transformed_keypoints:", transformed_keypoints.shape)
-    print("keypoints2:", len(keypoints2))
-    print("H:", H.shape)
-    print("unmatched_keypoints1:", unmatched_keypoints1.shape)
-
-    torch.set_grad_enabled(True)
-    #return {'src':src_pts,'des':dst_pts}
-    return (src_pts,dst_pts),self.numpy_to_keypoints(keypoints1),transformed_keypoints,self.numpy_to_keypoints(keypoints2),H,self.array_to_keypoints(unmatched_keypoints1)
-
-    def scale(self,targets):
-        ratio_scale=[];stat=[]
-        for Batch in targets:
-          Masks = Batch['masks'].detach().cpu().numpy()
-          I,T,H,W = Masks.shape
-          cmax = []
-          for i in range(0,I):
-            cmax.append(len(np.where(Masks[i]>0)[0]))
-          
-          if len(cmax)!=0:
-              if np.max(cmax)!=0:
-                  ratio_scale.append(np.sum(cmax/np.max(cmax)))
-                  stat.append(1)
+        img2 = cv2.cvtColor(img2, cv2.COLOR_BGR2RGB)  # Convert BGR to RGB
+        img2 = img2 / 255.0
+        # Convert to PyTorch tensor and move to CUDA with float32 type
+        img2 = torch.tensor(img2, dtype=torch.float32).permute(2, 0, 1)  # Channels first
+        img2 = img2.to('cuda:0')
+    
+        feats0 = extractor.extract(image0.to(device))
+        feats1 = extractor.extract(image1.to(device))
+        matches01 = matcher({"image0": feats0, "image1": feats1})
+        feats0, feats1, matches01 = [
+            rbd(x) for x in [feats0, feats1, matches01]
+        ]  # remove batch dimension
+    
+        kpts0, kpts1, matches = feats0["keypoints"], feats1["keypoints"], matches01["matches"]
+        m_kpts0, m_kpts1 = kpts0[matches[..., 0]], kpts1[matches[..., 1]]
+    
+        #axes = viz2d.plot_images([image0, image1])
+        #viz2d.plot_matches(m_kpts0, m_kpts1, color="lime", lw=0.2)
+        #viz2d.add_text(0, f'Stop after {matches01["stop"]} layers', fs=20)
+    
+        kpc0, kpc1 = viz2d.cm_prune(matches01["prune0"]), viz2d.cm_prune(matches01["prune1"])
+        #viz2d.plot_images([image0, image1])
+        #viz2d.plot_keypoints([kpts0, kpts1], colors=[kpc0, kpc1], ps=10)
+    
+        # Assume you have `m_kpts0`, `m_kpts1`, and `matches` from your new code
+        # `matches` is already providing correspondences, so extract src_pts and dst_pts
+    
+        # Convert matched keypoints to numpy arrays for OpenCV compatibility
+        src_pts = m_kpts0.cpu().numpy().astype(np.float32).reshape(-1, 1, 2)  # Keypoints from image0
+        dst_pts = m_kpts1.cpu().numpy().astype(np.float32).reshape(-1, 1, 2)  # Keypoints from image1
+    
+        # Calculate the homography matrix H using RANSAC
+        if len(src_pts) >= 4:  # Minimum 4 points required for homography
+            H, mask = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC, 5.0)
+        else:
+            H = None
+            mask = None
+    
+        # Identify unmatched keypoints in image0
+        # Extract all keypoints from feats0
+        all_kpts0 = feats0["keypoints"].cpu().numpy().astype(np.float32)  # Keypoints from image0
+        matched_indices0 = matches[..., 0].cpu().numpy()  # Indices of matched keypoints in image0
+        unmatched_indices0 = set(range(len(all_kpts0))) - set(matched_indices0)
+        unmatched_keypoints1 = all_kpts0[list(unmatched_indices0)]  # Unmatched keypoints from image0
+    
+        # Transform unmatched keypoints using the homography matrix
+        transformed_keypoints = []
+        if H is not None and len(unmatched_keypoints1) > 0:
+            try:
+                unmatched_keypoints1 = unmatched_keypoints1.reshape(-1, 1, 2)
+                transformed_keypoints = cv2.perspectiveTransform(unmatched_keypoints1, H)
+                transformed_keypoints = transformed_keypoints.reshape(-1, 2)  # Flatten back to (n, 2)
+            except:
+                transformed_keypoints = []
+    
+        # Convert keypoints from PyTorch to NumPy for compatibility with other tasks
+        keypoints1 = feats0["keypoints"].cpu().numpy()
+        keypoints2 = feats1["keypoints"].cpu().numpy()
+    
+        print("src_pts:", src_pts.shape)
+        print("dst_pts:", dst_pts.shape)
+        print("keypoints1:", len(keypoints1))
+        print("transformed_keypoints:", transformed_keypoints.shape)
+        print("keypoints2:", len(keypoints2))
+        print("H:", H.shape)
+        print("unmatched_keypoints1:", unmatched_keypoints1.shape)
+    
+        torch.set_grad_enabled(True)
+        #return {'src':src_pts,'des':dst_pts}
+        return (src_pts,dst_pts),self.numpy_to_keypoints(keypoints1),transformed_keypoints,self.numpy_to_keypoints(keypoints2),H,self.array_to_keypoints(unmatched_keypoints1)
+    
+        def scale(self,targets):
+            ratio_scale=[];stat=[]
+            for Batch in targets:
+              Masks = Batch['masks'].detach().cpu().numpy()
+              I,T,H,W = Masks.shape
+              cmax = []
+              for i in range(0,I):
+                cmax.append(len(np.where(Masks[i]>0)[0]))
+              
+              if len(cmax)!=0:
+                  if np.max(cmax)!=0:
+                      ratio_scale.append(np.sum(cmax/np.max(cmax)))
+                      stat.append(1)
+                  else:
+                    ratio_scale.append(1)
+                    stat.append(-1)
               else:
                 ratio_scale.append(1)
                 stat.append(-1)
-          else:
-            ratio_scale.append(1)
-            stat.append(-1)
-            
-        return torch.tensor(ratio_scale).float().cuda(),stat
+                
+            return torch.tensor(ratio_scale).float().cuda(),stat
     
     def warp(self,hi,wi,H):
         size = (wi,hi)
