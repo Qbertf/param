@@ -36,6 +36,8 @@ class PCTKernelLayer(nn.Module):
     
     def R_nl(self,r, n, l):
         result = 0
+        n = n.to(torch.int32)
+        l = l.to(torch.int32)
         for s in range((n - abs(l)) // 2 + 1):
             term = ((-1)**s *
                     self.comb(torch.tensor(n), torch.tensor(s)) *
@@ -47,6 +49,9 @@ class PCTKernelLayer(nn.Module):
     
     
     def R_nl_pzms(self,r, n, l):
+        n = n.to(torch.int32)
+        l = l.to(torch.int32)
+
         result = 0
         for s in range((n - abs(l)) // 2 + 1):
             term = ((-1)**s *
@@ -60,6 +65,7 @@ class PCTKernelLayer(nn.Module):
     
     def Q_n(self,r, n):
         result = 0
+        n = n.to(torch.int32)
         for s in range(n + 1):
             alpha_ns = ((-1)**(n + s) * 
                         self.factorial_tensor(n + s + 1) /
@@ -92,9 +98,9 @@ class PCTKernelLayer(nn.Module):
         for nl in list_nl:
           n,l = nl
           # Compute the PCT kernel (magnitude and phase)
-          amplitude = mask *  self.R_nl(R, torch.round(n), torch.round(l))  #torch.exp(-1j * 2* np.pi * n * R**2)  # Amplitude component
-          amplitude = mask *  self.R_nl_pzms(R, torch.round(n), torch.round(l))  #torch.exp(-1j * 2* np.pi * n * R**2)  # Amplitude component
-          amplitude = mask *  self.Q_n(R, torch.round(n))  #torch.exp(-1j * 2* np.pi * n * R**2)  # Amplitude component
+          amplitude = mask *  self.R_nl(R, n, l)  #torch.exp(-1j * 2* np.pi * n * R**2)  # Amplitude component
+          amplitude = mask *  self.R_nl_pzms(R, n, l)  #torch.exp(-1j * 2* np.pi * n * R**2)  # Amplitude component
+          amplitude = mask *  self.Q_n(R, n)  #torch.exp(-1j * 2* np.pi * n * R**2)  # Amplitude component
 
           phase = mask * torch.exp(-1j * l * Theta)       # Phase component
 
