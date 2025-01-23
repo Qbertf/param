@@ -91,9 +91,9 @@ class PCTKernelLayer(nn.Module):
         for nl in list_nl:
           n,l = nl
           # Compute the PCT kernel (magnitude and phase)
-          amplitude = mask *  self.R_nl(R, n, l)  #torch.exp(-1j * 2* np.pi * n * R**2)  # Amplitude component
-          amplitude = mask *  self.R_nl_pzms(R, n, l)  #torch.exp(-1j * 2* np.pi * n * R**2)  # Amplitude component
-          amplitude = mask *  self.Q_n(R, n)  #torch.exp(-1j * 2* np.pi * n * R**2)  # Amplitude component
+          amplitude = mask *  self.R_nl(R, int(n), int(l))  #torch.exp(-1j * 2* np.pi * n * R**2)  # Amplitude component
+          amplitude = mask *  self.R_nl_pzms(R, int(n), int(l))  #torch.exp(-1j * 2* np.pi * n * R**2)  # Amplitude component
+          amplitude = mask *  self.Q_n(R, int(n))  #torch.exp(-1j * 2* np.pi * n * R**2)  # Amplitude component
 
           phase = mask * torch.exp(-1j * l * Theta)       # Phase component
 
