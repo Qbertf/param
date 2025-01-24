@@ -118,9 +118,25 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 # Subnetwork to output n and l from input
+# Subnetwork to output n and l from input
 class SubNet(nn.Module):
     def __init__(self,numberkernel,inputdim):
         super(SubNet, self).__init__()
+        self.fc1 = nn.Linear(inputdim, 16)
+        self.fc2 = nn.Linear(16, numberkernel)
+
+    def forward(self, x):
+        x = F.leaky_relu(self.fc1(x))
+        x = self.fc2(x)
+        
+        # Apply Sigmoid activation to get values between 0 and 1, then scale to [1, 4]
+        x = torch.sigmoid(x) * 3 + 1  # Scales to range [1, 4]
+        
+        return x  # Output values are now between 1 and 4
+        
+class SubNetx(nn.Module):
+    def __init__(self,numberkernel,inputdim):
+        super(SubNetx, self).__init__()
         #self.fc1 = nn.Linear(inputdim, 16)
         #self.fc2 = nn.Linear(16, numberkernel)
 
