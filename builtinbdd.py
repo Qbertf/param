@@ -22,8 +22,8 @@ _PREDEFINED_SPLITS_COCO["coco"] = {
 _PREDEFINED_SPLITS_YTVIS_2019 = {
     "ytvis_2019_train": ("/kaggle/input/train-vis/train/JPEGImages",
                          "/kaggle/input/jsonfarnoosh/jsonfarnoosh/train2019.json"), 
-    "ytvis_2019_val": ("/kaggle/input/vis2021/train/train/JPEGImages",
-                       "/kaggle/input/valid21-794-m2f/_home_user01_MaskFreeVIS_train_instances_vis2021_forvalid_794.json"),
+    "ytvis_2019_val": ("/kaggle/input/bdd-train/BDD/JPEGImages",
+                       "/kaggle/input/bdd-train/BDD/train.json"),
     "ytvis_2019_test": ("ytvis_2019/test/JPEGImages",
                         "ytvis_2019/test.json"),
 }
