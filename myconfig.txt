@@ -1,0 +1,1 @@
+{'alpha': 1, 'beta': 1, 'QCC': 'spv_func', 'kerneltype': 'dynamic_4', 'kernelsize': 4, 'powertype': 'dynamic', 'corsstype': '0_1', 'targettype': '1_1', 'scenetype': '1_1', 'powerinput': 1, 'realmag': 1}
