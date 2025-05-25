@@ -19,6 +19,7 @@ import cv2
 import utils
 import glob
 import shutil
+import zipfile
 
 LOGGER = logging.getLogger(__name__)
 IMAGENET_MEAN = [0.485, 0.456, 0.406]
@@ -295,6 +296,23 @@ class GLASS(torch.nn.Module):
 
                 eval_path = './results/eval/' + name + '/'
                 train_path = './results/training/' + name + '/'
+                ckpt_zip_path = os.path.join(self.ckpt_dir, 'all_ckpts.zip')
+
+                ckpt_path = os.path.join(self.ckpt_dir, f"ckpt_{i_epoch}.pth")
+                torch.save(state_dict, ckpt_path)
+                
+                if os.path.exists(ckpt_zip_path):
+                    os.remove(ckpt_zip_path)
+                
+                with zipfile.ZipFile(ckpt_zip_path, 'w', zipfile.ZIP_DEFLATED) as ckpt_zip:
+                    for root, dirs, files in os.walk(self.ckpt_dir):
+                        for file in files:
+                            if file.endswith('.pth'):
+                                file_path = os.path.join(root, file)
+                                arcname = os.path.relpath(file_path, self.ckpt_dir)
+                                ckpt_zip.write(file_path, arcname)
+
+                
                 if best_record is None:
                     best_record = [image_auroc, image_ap, pixel_auroc, pixel_ap, pixel_pro, i_epoch]
                     ckpt_path_best = os.path.join(self.ckpt_dir, "ckpt_best_{}.pth".format(i_epoch))
@@ -304,7 +322,7 @@ class GLASS(torch.nn.Module):
 
                 elif image_auroc + pixel_auroc > best_record[0] + best_record[2]:
                     best_record = [image_auroc, image_ap, pixel_auroc, pixel_ap, pixel_pro, i_epoch]
-                    #os.remove(ckpt_path_best)
+                    os.remove(ckpt_path_best)
                     ckpt_path_best = os.path.join(self.ckpt_dir, "ckpt_best_{}.pth".format(i_epoch))
                     torch.save(state_dict, ckpt_path_best)
                     shutil.rmtree(eval_path, ignore_errors=True)
