@@ -297,7 +297,7 @@ class GLASS(torch.nn.Module):
                 eval_path = './results/eval/' + name + '/'
                 train_path = './results/training/' + name + '/'
                 ckpt_zip_path = os.path.join(self.ckpt_dir, 'all_ckpts.zip')
-                os.system('cp '+ckpt_zip_path+' all_ckpts2.zip')
+                os.system('cp /kaggle/working/GLASS/'+ckpt_zip_path+' all_ckpts2.zip')
                 ckpt_path = os.path.join(self.ckpt_dir, f"ckpt_{i_epoch}.pth")
                 torch.save(state_dict, ckpt_path)
                 
