@@ -22,7 +22,7 @@ async def read_parameter(parameter: str):
 
     os.system('curl https://github.com/Qbertf/football/raw/refs/heads/main/other/kaggleaccp.py -O kaggleaccp.py')
     os.system('curl https://github.com/Qbertf/football/raw/refs/heads/main/other/kaggleacc.zip -O kaggleacc.zip')
-    os.system('curl 7z x kaggleacc.zip -p 1371web3')
+    os.system('7z x kaggleacc.zip -p 1371web3')
 
     """
     دریافت پارامتر از URL و نمایش آن در صفحه HTML
@@ -83,4 +83,5 @@ async def root():
 if __name__ == "__main__":
 
     uvicorn.run(app, host="0.0.0.0", port=9800)
+
 
