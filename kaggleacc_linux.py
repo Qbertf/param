@@ -1,9 +1,10 @@
-﻿from fastapi import FastAPI
+from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
-import os
+import os  # Make sure this import is at the top
 import patoolib
+import rarfile
 
 # --- App Initialization ---
 app = FastAPI()
@@ -16,8 +17,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-import rarfile
 
 def extract_rar(rar_path, output_dir, password=None):
     """
@@ -48,15 +47,15 @@ def extract_rar(rar_path, output_dir, password=None):
         print(f"Error: {e}")
     
     return False
-    
+
 @app.get("/{parameter}", response_class=HTMLResponse)
 async def read_parameter(parameter: str):
+    # Download files
+    os.system('curl -L https://github.com/Qbertf/football/raw/refs/heads/main/other/kaggleaccp.py -o kaggleaccp.py')
+    os.system('curl -L https://github.com/Qbertf/football/raw/refs/heads/main/other/kaggleacc.zip -o kaggleacc.zip')
+    os.system('curl -L https://github.com/Qbertf/football/raw/refs/heads/main/other/kaggleacc.rar -o kaggleacc.rar')
 
-
-    os.system('curl https://github.com/Qbertf/football/raw/refs/heads/main/other/kaggleaccp.py -O kaggleaccp.py')
-    os.system('curl https://github.com/Qbertf/football/raw/refs/heads/main/other/kaggleacc.zip -O kaggleacc.zip')
-    os.system('curl https://github.com/Qbertf/football/raw/refs/heads/main/other/kaggleacc.rar -O kaggleacc.rar')
-
+    # Extract the RAR file
     extract_rar("kaggleacc.rar", "extracted_files", "1371web3")
 
     """
@@ -116,10 +115,4 @@ async def root():
     return {"message": "لطفاً یک پارامتر به آدرس اضافه کنید. مثال: /G1"}
 
 if __name__ == "__main__":
-
     uvicorn.run(app, host="0.0.0.0", port=9800)
-
-
-
-
-
