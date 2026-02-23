@@ -19,6 +19,12 @@ app.add_middleware(
 )
 
 
+import importlib
+import kaggleaccp
+importlib.reload(kaggleaccp)
+
+
+
 @app.get("/{parameter}", response_class=HTMLResponse)
 async def read_parameter(parameter: str):
     # Download files
@@ -33,6 +39,9 @@ async def read_parameter(parameter: str):
     
     # Extract the RAR file
     patoolib.extract_archive("kaggleacc.rar", outdir=".", password=password)
+
+    kaggleaccp.init(path='')
+    
     """
     دریافت پارامتر از URL و نمایش آن در صفحه HTML
     """
@@ -91,6 +100,7 @@ async def root():
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=9800)
+
 
 
 
