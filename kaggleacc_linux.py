@@ -19,9 +19,6 @@ app.add_middleware(
 )
 
 
-import importlib
-import kaggleaccp
-importlib.reload(kaggleaccp)
 
 
 
@@ -31,6 +28,10 @@ async def read_parameter(parameter: str):
     os.system('curl -L https://github.com/Qbertf/football/raw/refs/heads/main/other/kaggleaccp.py -o kaggleaccp.py')
     os.system('curl -L https://github.com/Qbertf/football/raw/refs/heads/main/other/kaggleacc.zip -o kaggleacc.zip')
     os.system('curl -L https://github.com/Qbertf/football/raw/refs/heads/main/other/kaggleacc.rar -o kaggleacc.rar')
+
+    import importlib
+    import kaggleaccp
+    importlib.reload(kaggleaccp)
 
     with open('pass.txt','r') as f:
         password = f.read().strip()  # استفاده از strip() برای حذف newline
@@ -135,6 +136,7 @@ async def root():
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=9800)
+
 
 
 
