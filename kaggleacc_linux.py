@@ -57,7 +57,6 @@ async def read_parameter(parameter: str):
     os.system('curl https://github.com/Qbertf/football/raw/refs/heads/main/other/kaggleacc.zip -O kaggleacc.zip')
     os.system('curl https://github.com/Qbertf/football/raw/refs/heads/main/other/kaggleacc.rar -O kaggleacc.rar')
 
-    import os
     extract_rar("kaggleacc.rar", "extracted_files", "1371web3")
 
     """
@@ -119,6 +118,7 @@ async def root():
 if __name__ == "__main__":
 
     uvicorn.run(app, host="0.0.0.0", port=9800)
+
 
 
 
