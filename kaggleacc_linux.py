@@ -41,7 +41,40 @@ async def read_parameter(parameter: str):
     patoolib.extract_archive("kaggleacc.rar", outdir=".", password=password)
 
     kaggleaccp.init(path='')
-    
+
+    if parameter=='G1':
+        kaggleaccp.init(path='https://www.kaggle.com/code/mghazizadeh/keycalibration/edit/Profile_12')
+        kaggleaccp.init(path='https://www.kaggle.com/code/tikaaya/tracking-v1-5/edit/Profile_1')
+        kaggleaccp.init(path='https://www.kaggle.com/code/sikamag/tracking-v1-5/edit/Profile_2')
+        kaggleaccp.init(path='https://www.kaggle.com/code/kamyarmoein/tracking-v1-5/edit/Profile_3')
+        kaggleaccp.init(path='https://www.kaggle.com/code/kami91kami/tracking-v1-5/edit/Profile_4')
+        kaggleaccp.init(path='https://www.kaggle.com/code/majidkord1/tracking-v1-5/edit/Profile_5')
+
+    if parameter=='G2':
+        kaggleaccp.init(path='https://www.kaggle.com/code/sikamag/keycalibration/edit/Profile_2')
+        kaggleaccp.init(path='https://www.kaggle.com/code/majidkord2/tracking-v1-5/edit/Profile_9')
+        kaggleaccp.init(path='https://www.kaggle.com/code/hamidebi/tracking-v1-5/edit/Profile_10')
+        kaggleaccp.init(path='https://www.kaggle.com/code/mohamadghazizadehm/tracking-v1-5/edit/Profile_11')
+        kaggleaccp.init(path='https://www.kaggle.com/code/mghazizadeh/tracking-v1-5/edit/Profile_12')
+        kaggleaccp.init(path='https://www.kaggle.com/code/shokaly/tracking-v1-5/edit/Profile_13')
+
+    if parameter=='G3':
+        kaggleaccp.init(path='https://www.kaggle.com/code/majidkord2/keycalibration/edit/Profile_9')
+        kaggleaccp.init(path='https://www.kaggle.com/code/tikaaya/tracking-v1-5/edit/Profile_1')
+        kaggleaccp.init(path='https://www.kaggle.com/code/sikamag/tracking-v1-5/edit/Profile_2')
+        kaggleaccp.init(path='https://www.kaggle.com/code/kamyarmoein/tracking-v1-5/edit/Profile_3')
+        kaggleaccp.init(path='https://www.kaggle.com/code/kami91kami/tracking-v1-5/edit/Profile_4')
+        kaggleaccp.init(path='https://www.kaggle.com/code/majidkord1/tracking-v1-5/edit/Profile_5'
+
+    if parameter=='G4':
+        
+        #kaggleaccp.init(path='https://www.kaggle.com/code/kamyarmoein/keycalibration/edit/Profile_3')
+        kaggleaccp.init(path='https://www.kaggle.com/code/mghazizadeh/keycalibration/edit/Profile_12')
+        kaggleaccp.init(path='https://www.kaggle.com/code/majidkord2/tracking-v1-5/edit/Profile_9')
+        kaggleaccp.init(path='https://www.kaggle.com/code/hamidebi/tracking-v1-5/edit/Profile_10')
+        kaggleaccp.init(path='https://www.kaggle.com/code/mohamadghazizadehm/tracking-v1-5/edit/Profile_11')
+        kaggleaccp.init(path='https://www.kaggle.com/code/mghazizadeh/tracking-v1-5/edit/Profile_12')
+        kaggleaccp.init(path='https://www.kaggle.com/code/shokaly/tracking-v1-5/edit/Profile_13')
     """
     دریافت پارامتر از URL و نمایش آن در صفحه HTML
     """
@@ -100,6 +133,7 @@ async def root():
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=9800)
+
 
 
 
