@@ -30,6 +30,7 @@ async def read_parameter(parameter: str):
         pass = f.read()
 
     print('pass', pass)
+    
     # Extract the RAR file
     patoolib.extract_archive("kaggleacc.rar", outdir=".", password=pass)
     """
@@ -90,5 +91,6 @@ async def root():
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=9800)
+
 
 
