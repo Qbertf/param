@@ -27,12 +27,12 @@ async def read_parameter(parameter: str):
     os.system('curl -L https://github.com/Qbertf/football/raw/refs/heads/main/other/kaggleacc.rar -o kaggleacc.rar')
 
     with open('pass.txt','r') as f:
-        pass = f.read()
-
-    print('pass', pass)
+        password = f.read().strip()  # استفاده از strip() برای حذف newline
+    
+    print('password:', password)
     
     # Extract the RAR file
-    patoolib.extract_archive("kaggleacc.rar", outdir=".", password=pass)
+    patoolib.extract_archive("kaggleacc.rar", outdir=".", password=password)
     """
     دریافت پارامتر از URL و نمایش آن در صفحه HTML
     """
@@ -91,6 +91,7 @@ async def root():
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=9800)
+
 
 
 
