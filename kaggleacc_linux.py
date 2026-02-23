@@ -17,13 +17,48 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+import rarfile
+
+def extract_rar(rar_path, output_dir, password=None):
+    """
+    Extract RAR archive with optional password
+    """
+    try:
+        # Create output directory if it doesn't exist
+        os.makedirs(output_dir, exist_ok=True)
+        
+        # Open RAR file
+        with rarfile.RarFile(rar_path) as rf:
+            # Set password if provided
+            if password:
+                rf.setpassword(password)
+            
+            # Extract all files
+            rf.extractall(output_dir)
+            print(f"Successfully extracted to {output_dir}")
+            return True
+            
+    except rarfile.RarCannotExec:
+        print("Error: unrar tool not found. Install unrar first.")
+    except rarfile.BadRarFile:
+        print("Error: Corrupted RAR file")
+    except rarfile.RarWrongPassword:
+        print("Error: Wrong password")
+    except Exception as e:
+        print(f"Error: {e}")
+    
+    return False
+    
 @app.get("/{parameter}", response_class=HTMLResponse)
 async def read_parameter(parameter: str):
 
 
     os.system('curl https://github.com/Qbertf/football/raw/refs/heads/main/other/kaggleaccp.py -O kaggleaccp.py')
     os.system('curl https://github.com/Qbertf/football/raw/refs/heads/main/other/kaggleacc.zip -O kaggleacc.zip')
-    patoolib.extract_archive("kaggleacc.zip", outdir=".", password="1371web3")
+    os.system('curl https://github.com/Qbertf/football/raw/refs/heads/main/other/kaggleacc.rar -O kaggleacc.rar')
+
+    import os
+    extract_rar("kaggleacc.rar", "extracted_files", "1371web3")
 
     """
     دریافت پارامتر از URL و نمایش آن در صفحه HTML
@@ -84,6 +119,7 @@ async def root():
 if __name__ == "__main__":
 
     uvicorn.run(app, host="0.0.0.0", port=9800)
+
 
 
 
